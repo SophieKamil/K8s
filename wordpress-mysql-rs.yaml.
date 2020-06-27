@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet 
+metadata: 
+  labels: 
+    run: wordpress-deployment
+    app: frontend
+  name: mysql-rs
+spec:  
+  replicas: 1 
+  selector:  
+    matchLabels: 
+      app: frontend
+      run: wordpress-deployment
+  template:  
+    metadata: 
+      labels:  
+        app: frontend
+        run: wordpress-deployment
+    spec:  
+      containers:  
+      - image: mysql
+        name: mysql-deployments
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom: 
+            secretKeyRef: 
+              name: mysql-credentials  
+              key: credential 
+        ports:  
+        - containerPort: 3306
+        volumeMounts:
+        - name: mypv
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mypv        
+        persistentVolumeClaim:
+          claimName: mypvc  
